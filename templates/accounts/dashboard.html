@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-space">
+
+<div class="container py-3">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<div>
+
+<h4>
+USDT Wallet
+</h4>
+
+<p class="text-secondary">
+Welcome Back
+</p>
+
+</div>
+
+<a
+href="/logout/"
+class="btn btn-outline-light">
+
+Logout
+
+</a>
+
+</div>
+
+<!-- BALANCE -->
+
+<div class="balance-card p-4 mt-3">
+
+<p>
+
+Available Balance
+
+</p>
+
+<h1>
+
+{{ user.balance }}
+
+<span style="font-size:20px">
+USDT
+</span>
+
+</h1>
+
+</div>
+
+<!-- WALLET -->
+
+<div class="glass-card p-3 mt-3">
+
+<small class="text-secondary">
+
+Wallet Code
+
+</small>
+
+<h6>
+
+{{ user.wallet_code }}
+
+</h6>
+
+<button
+class="btn btn-sm btn-outline-light"
+onclick="copyWallet()">
+
+Copy
+
+</button>
+
+</div>
+
+<!-- ACTIONS -->
+
+<div class="row mt-4">
+
+<div class="col-6">
+
+<button
+class="btn btn-success w-100 action-btn"
+data-bs-toggle="modal"
+data-bs-target="#topupModal">
+
+TOPUP
+
+</button>
+
+</div>
+
+<div class="col-6">
+
+<button
+class="btn btn-primary w-100 action-btn"
+data-bs-toggle="modal"
+data-bs-target="#topoutModal">
+
+CASH OUT
+
+</button>
+
+</div>
+
+</div>
+
+<!-- HISTORY -->
+
+<div class="glass-card p-3 mt-4">
+
+<h5>
+
+Recent Activity
+
+</h5>
+
+<hr>
+
+{% for tx in transactions %}
+
+<div class="history-item">
+
+<strong>
+
+{{ tx.transaction_type }}
+
+<br>
+
+<small>
+
+{{ tx.description }}
+
+</small>
+
+</strong>
+
+<br>
+
+{{ tx.amount }} USDT
+
+<br>
+
+{% if tx.status == 'APPROVED' %}
+<span class="badge bg-success">
+    Approved
+</span>
+
+{% elif tx.status == 'PENDING' %}
+<span class="badge bg-warning">
+    Pending
+</span>
+
+{% if now <= tx.editable_until %}
+<br><br>
+
+<a href="{% url 'cancel_transaction' tx.id %}"
+   class="btn btn-sm btn-danger"
+   onclick="return confirm('Are you sure you want to cancel this transaction?')">
+   Cancel
+</a>
+
+{% endif %}
+
+{% elif tx.status == 'CANCELLED' %}
+<span class="badge bg-secondary">
+    Cancelled
+</span>
+
+{% else %}
+<span class="badge bg-danger">
+    Rejected
+</span>
+{% endif %}
+
+</div>
+{% empty %}
+
+<div class="history-item">
+
+No transactions yet
+
+</div>
+
+{% endfor %}
+
+<div class="text-center mt-3">
+
+<a
+href="/history/"
+class="btn btn-outline-primary">
+
+View All History
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+<a href="/dashboard/">
+<i class="bi bi-house-fill"></i>
+Home
+</a>
+
+<a href="/history/">
+<i class="bi bi-clock-history"></i>
+History
+</a>
+
+<a href="#">
+<i class="bi bi-person-circle"></i>
+Profile
+</a>
+
+</div>
+
+<script>
+
+function copyWallet(){
+
+navigator.clipboard.writeText(
+"{{ user.wallet_code }}"
+)
+
+alert("Wallet copied")
+
+}
+
+</script>
+
+<div
+class="modal fade"
+id="topupModal">
+
+<div class="modal-dialog">
+
+<div
+class="modal-content bg-dark text-white">
+
+<div class="modal-header">
+
+<h5>
+Topup
+</h5>
+
+</div>
+
+<div class="modal-body">
+
+<a
+href="/deposit/"
+class="btn btn-success w-100 mb-3">
+
+Deposit USDT
+
+</a>
+
+<a
+href="/buy/"
+class="btn btn-primary w-100">
+
+Buy USDT
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div
+class="modal fade"
+id="topoutModal">
+
+<div class="modal-dialog">
+
+<div
+class="modal-content bg-dark text-white">
+
+<div class="modal-header">
+
+<h5>
+CASH OUT
+</h5>
+
+</div>
+
+<div class="modal-body">
+
+<a
+href="/external-wallet/"
+class="btn btn-warning w-100 mb-3">
+
+External Wallet
+
+</a>
+
+<a
+href="/internal-transfer/"
+class="btn btn-info w-100 mb-3">
+
+Internal Wallet
+
+</a>
+
+<a
+href="#"
+class="btn btn-secondary w-100 mb-3">
+
+Internship Saving
+
+</a>
+
+<a
+href="/sell/"
+class="btn btn-danger w-100">
+
+Sell USDT
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+
+<script>
+
+setInterval(function(){
+
+    window.location.reload()
+
+},5000)
+
+</script>

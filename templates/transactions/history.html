@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<h3>
+
+Transaction History
+
+</h3>
+
+<a
+href="/dashboard/"
+class="btn btn-outline-light">
+
+Back
+
+</a>
+
+</div>
+
+{% for tx in transactions %}
+
+<div class="glass-card p-3 mt-3">
+
+<div class="d-flex justify-content-between">
+
+<div>
+
+<h6>
+
+{{ tx.transaction_type }}
+
+</h6>
+
+{% if tx.description %}
+
+<small>
+
+{{ tx.description }}
+
+</small>
+
+{% endif %}
+
+</div>
+
+<div class="text-end">
+
+{% if tx.status == 'APPROVED' %}
+
+<span class="badge bg-success">
+Approved
+</span>
+
+{% elif tx.status == 'PENDING' %}
+
+<span class="badge bg-warning text-dark">
+Pending
+</span>
+
+{% if tx.status == "PENDING" and now <= tx.editable_until %}
+<form method="POST"
+      action="{% url 'cancel_transaction' tx.id %}"
+      style="display:inline;"
+      onsubmit="return confirm('Are you sure you want to cancel this transaction?');">
+
+    {% csrf_token %}
+
+    <button type="submit"
+            class="btn btn-danger btn-sm">
+        Cancel
+    </button>
+
+</form>
+{% endif %}
+
+{% elif tx.status == 'CANCELLED' %}
+
+<span class="badge bg-secondary">
+Cancelled
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+Rejected
+</span>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<hr>
+
+<h5>
+
+{{ tx.amount }} USDT
+
+</h5>
+
+{% if tx.rwf_amount %}
+
+<p>
+
+{{ tx.rwf_amount }} RWF
+
+</p>
+
+{% endif %}
+
+<small class="text-secondary">
+
+{{ tx.created_at }}
+
+</small>
+
+</div>
+
+{% empty %}
+
+<div class="glass-card p-4 mt-3">
+
+No transactions found.
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

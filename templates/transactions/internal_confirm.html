@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="glass-card p-4">
+
+<h3>
+
+Confirm Transfer
+
+</h3>
+
+<div class="alert alert-warning mt-3">
+
+You are about to send
+
+<strong>
+
+{{ amount }} USDT
+
+</strong>
+
+to
+
+<strong>
+
+{{ receiver_name }}
+
+</strong>
+
+</div>
+
+<div class="glass-card p-3 mt-3">
+
+<p>
+
+Wallet Code
+
+</p>
+
+<h6>
+
+{{ wallet_code }}
+
+</h6>
+
+</div>
+
+<form
+method="POST"
+action="/internal-confirm/">
+
+{% csrf_token %}
+
+<input
+type="hidden"
+name="wallet_code"
+value="{{ wallet_code }}">
+
+<input
+type="hidden"
+name="amount"
+value="{{ amount }}">
+
+<div class="row mt-4">
+
+<div class="col-6">
+
+<a
+href="/internal-transfer/"
+class="btn btn-danger w-100">
+
+Cancel
+
+</a>
+
+</div>
+
+<div class="col-6">
+
+<button
+class="btn btn-success w-100">
+
+Confirm
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

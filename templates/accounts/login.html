@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center align-items-center vh-100">
+
+<div class="col-md-5">
+
+<div class="glass-card p-4">
+
+<div class="text-center mb-4">
+
+<h1 class="logo">
+💰 USDT Wallet
+</h1>
+
+<p class="text-secondary">
+Secure Digital Wallet
+</p>
+
+</div>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="mb-3">
+
+<label>
+Wallet Code
+</label>
+
+<input
+type="text"
+name="wallet_code"
+class="form-control wallet-input"
+placeholder="Enter Wallet Code">
+
+</div>
+
+<button
+class="btn btn-wallet w-100">
+
+Continue
+
+</button>
+
+</form>
+
+<div class="text-center mt-4">
+
+<a
+href="/register/"
+class="text-decoration-none">
+
+Are you new?
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

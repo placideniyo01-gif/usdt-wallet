@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="glass-card p-4">
+
+<h3>
+
+Confirm Withdrawal
+
+</h3>
+
+<div class="alert alert-danger">
+
+Please verify carefully before continuing.
+
+</div>
+
+<p>
+
+You are about to send:
+
+</p>
+
+<h4>
+
+{{ amount }} USDT
+
+</h4>
+
+<p>
+
+To:
+
+</p>
+
+<div class="glass-card p-3">
+
+{{ wallet_address }}
+
+</div>
+
+<p class="mt-3">
+
+Fee:
+
+<strong>
+
+{{ fee }} USDT
+
+</strong>
+
+</p>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="row">
+
+<div class="col-6">
+
+<a
+href="/external-wallet/"
+class="btn btn-secondary w-100">
+
+Cancel
+
+</a>
+
+</div>
+
+<div class="col-6">
+
+<button
+class="btn btn-success w-100">
+
+Confirm
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

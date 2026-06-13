@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="glass-card p-4">
+
+<h3>
+
+Sell USDT
+
+</h3>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<label>
+
+Amount
+
+</label>
+
+<input
+type="number"
+step="0.01"
+name="amount"
+id="amount"
+class="form-control"
+value="{% if edit_tx %}{{ edit_tx.amount }}{% endif %}">
+
+<br>
+
+<div class="alert alert-info">
+
+Rate:
+<strong>
+
+{{ rate }}
+
+</strong>
+
+<br>
+
+You Receive:
+
+<strong id="rwf">
+
+0 RWF
+
+</strong>
+
+</div>
+
+<label>
+
+MTN Number
+
+</label>
+
+<input
+type="text"
+name="phone"
+class="form-control"
+value="{% if edit_tx %}{{ edit_tx.description }}{% endif %}">
+
+<br>
+
+<label>
+
+Registered Name
+
+</label>
+
+<input
+type="text"
+name="receiver_name"
+class="form-control">
+
+<br>
+
+<div class="alert alert-warning">
+
+Names entered above must match
+the names registered on the MTN number.
+
+</div>
+
+<button
+class="btn btn-danger w-100">
+
+Sell USDT
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+document
+.getElementById('amount')
+.addEventListener(
+'input',
+function(){
+
+let amount =
+parseFloat(this.value)||0
+
+let rate =
+{{ rate }}
+
+document
+.getElementById(
+'rwf'
+).innerHTML =
+Math.round(
+amount*rate
+)
+
+}
+)
+
+</script>
+
+{% endblock %}

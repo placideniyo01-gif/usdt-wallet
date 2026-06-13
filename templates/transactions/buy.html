@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="glass-card p-4">
+
+<h3>
+
+Buy USDT
+
+</h3>
+
+<div class="alert alert-info">
+
+Current Rate:
+
+<strong>
+
+{{ rate }} RWF
+
+</strong>
+
+</div>
+
+<form
+method="POST"
+enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="mb-3">
+
+<label>
+
+USDT Amount
+
+</label>
+
+<input
+type="number"
+step="0.01"
+name="amount"
+id="amount"
+
+class="form-control">
+
+</div>
+
+<div class="alert alert-warning">
+
+You will pay:
+
+<br>
+
+<strong id="rwf">
+
+0 RWF
+
+</strong>
+
+</div>
+
+<div class="alert alert-success">
+
+<h6 class="mb-3">
+Pay using MTN Rwanda
+</h6>
+
+<hr>
+
+<div class="bg-dark p-3 rounded">
+
+<strong
+id="mtnCode"
+style="
+font-size:18px;
+word-break:break-all;
+">
+
+*182*8*1*{{ settings.mtn_code }}*0#
+
+</strong>
+
+</div>
+
+<button
+type="button"
+class="btn btn-outline-success mt-3 w-100"
+onclick="copyMTNCode()">
+
+📋 Copy MTN Code
+
+</button>
+
+
+<div class="alert alert-warning mt-3">
+
+<strong>
+Important:
+</strong>
+
+<br>
+
+After completing the MTN payment,
+take a screenshot of the successful transaction
+and upload it below before submitting your request.
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Payment Proof
+
+</label>
+
+<input
+type="file"
+name="screenshot"
+class="form-control">
+
+</div>
+
+<button
+class="btn btn-primary w-100">
+
+Confirm Buy
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+const rate = {{ rate }}
+
+document
+.getElementById('amount')
+.addEventListener(
+'input',
+function(){
+
+let amount =
+parseFloat(this.value) || 0
+
+let total =
+amount * rate
+
+document
+.getElementById('rwf')
+.innerHTML =
+total.toLocaleString()
++
+' RWF'
+
+document
+.getElementById('mtnCode')
+.innerHTML =
+`*182*8*1*{{ settings.mtn_code }}*${Math.round(total)}#`
+
+}
+)
+
+</script>
+
+<script>
+
+function copyMTNCode(){
+
+const code =
+document.getElementById(
+'mtnCode'
+).innerText
+
+navigator.clipboard.writeText(
+code
+)
+
+const btn =
+event.target
+
+btn.innerHTML =
+'✅ Copied Successfully'
+
+setTimeout(() => {
+
+btn.innerHTML =
+'📋 Copy MTN Code'
+
+}, 2000)
+
+}
+
+</script>
+
+{% endblock %}
