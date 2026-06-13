@@ -23,4 +23,10 @@ urlpatterns = [
         name='cancel_transaction'
     ),
 
+    path(
+        'forgot-wallet/',
+        views.forgot_wallet_view,
+        name='forgot_wallet'
+    ),
+
 ]

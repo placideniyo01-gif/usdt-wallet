@@ -241,3 +241,40 @@ def cancel_transaction_view(request, pk):
         )
 
     return redirect('/dashboard/')
+
+from django.shortcuts import render
+from django.contrib import messages
+from accounts.models import WalletUser
+
+
+def forgot_wallet_view(request):
+
+    wallet_code = None
+
+    if request.method == "POST":
+
+        names = request.POST.get("names")
+        phone = request.POST.get("phone_number")
+        secret_code = request.POST.get("secret_code")
+
+        user = WalletUser.objects.filter(
+            names=names,
+            phone_number=phone,
+            secret_code=secret_code
+        ).first()
+
+        if user:
+            wallet_code = user.wallet_code
+        else:
+            messages.error(
+                request,
+                "Information provided is incorrect."
+            )
+
+    return render(
+        request,
+        "accounts/forgot_wallet.html",
+        {
+            "wallet_code": wallet_code
+        }
+    )

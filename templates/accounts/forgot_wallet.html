@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h3>Recover Wallet Code</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <input
+                type="text"
+                name="names"
+                class="form-control"
+                placeholder="Full Names"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <input
+                type="text"
+                name="phone_number"
+                class="form-control"
+                placeholder="Phone Number"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <input
+                type="password"
+                name="secret_code"
+                class="form-control"
+                placeholder="Secret Code"
+                required
+            >
+        </div>
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            Recover Wallet
+        </button>
+
+    </form>
+
+    {% if wallet_code %}
+    <div class="alert alert-success mt-3">
+        Your Wallet Code:
+        <strong>{{ wallet_code }}</strong>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
