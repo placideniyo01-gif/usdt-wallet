@@ -90,7 +90,7 @@ def buy_view(request):
 
     settings = SystemSettings.objects.first()
 
-    rate = float(
+    rate = Decimal(
         settings.usd_rwf_rate
     )
 
@@ -100,7 +100,7 @@ def buy_view(request):
 
     if request.method == "POST":
 
-        amount = float(
+        amount = Decimal(
             request.POST.get("amount")
         )
 
@@ -113,6 +113,7 @@ def buy_view(request):
         BuyOrder.objects.create(
             user=user,
             amount=amount,
+            rwf_amount=rwf_amount,
             screenshot=screenshot,
             status='PENDING',
             visible_to_admin=False
@@ -440,10 +441,11 @@ def external_confirm_view(request):
 
     if request.method == "POST":
 
-        withdrawal.objects.create(
+        Withdrawal.objects.create(
             user=user,
+            wallet_address=wallet_address,
             amount=amount,
-            screenshot=screenshot,
+            fee=fee,
             status='PENDING',
             visible_to_admin=False
         )
@@ -568,7 +570,9 @@ def sell_view(request):
         SellOrder.objects.create(
             user=user,
             amount=amount,
-            screenshot=screenshot,
+            rwf_amount=rwf_amount,
+            phone_number=phone,
+            receiver_name=receiver_name,
             status='PENDING',
             visible_to_admin=False
         )
