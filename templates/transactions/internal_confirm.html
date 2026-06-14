@@ -78,6 +78,68 @@ Cancel
 
 </div>
 
+<form
+method="POST"
+action="/internal-confirm/">
+
+{% csrf_token %}
+
+<input
+type="hidden"
+name="wallet_code"
+value="{{ wallet_code }}">
+
+<input
+type="hidden"
+name="amount"
+value="{{ amount }}">
+
+<div class="mt-3">
+
+<label class="form-label">
+
+Secret Code
+
+</label>
+
+<input
+type="password"
+name="secret_code"
+class="form-control"
+placeholder="Enter your secret code"
+required>
+
+</div>
+
+<div class="row mt-4">
+
+<div class="col-6">
+
+<a
+href="/internal-transfer/"
+class="btn btn-danger w-100">
+
+Cancel
+
+</a>
+
+</div>
+
+<div class="col-6">
+
+<button
+class="btn btn-success w-100">
+
+Confirm
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
 <div class="col-6">
 
 <button

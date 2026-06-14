@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.hashers import check_password
 
 
 def deposit_view(request):
@@ -46,12 +47,13 @@ def deposit_view(request):
             amount=amount,
             screenshot=screenshot,
             status='PENDING',
-            visible_to_admin=False
+            visible_to_admin=False,
+            transaction=tx
         )
 
         editable_until = timezone.now() + timedelta(minutes=10)
         
-        Transaction.objects.create(
+        tx = Transaction.objects.create(
             user=user,
             transaction_type="DEPOSIT",
             amount=amount,
@@ -103,12 +105,13 @@ def buy_view(request):
             rwf_amount=rwf_amount,
             screenshot=screenshot,
             status='PENDING',
-            visible_to_admin=False
+            visible_to_admin=False,
+            transaction=tx
         )
 
         editable_until = timezone.now() + timedelta(minutes=10)
 
-        Transaction.objects.create(
+        tx = Transaction.objects.create(
             user=user,
             transaction_type="BUY",
             amount=amount,
@@ -236,7 +239,25 @@ def internal_confirm_view(request):
             wallet_code=wallet_code
         )
 
-        if sender.balance < amount:
+        secret_code = request.POST.get(
+            "secret_code"
+        )
+
+        if not check_password(
+            secret_code,
+            sender.secret_code
+        ):
+
+            messages.error(
+                request,
+                "Invalid secret code."
+            )
+
+            return redirect(
+                "/internal-transfer/"
+            )
+
+        if sender.available_balance < amount:
 
             messages.error(
                 request,
@@ -370,7 +391,7 @@ def external_wallet_view(request):
 
         total_required = amount + fee
 
-        if user.balance < total_required:
+        if user.available_balance < total_required:
 
             messages.error(
                 request,
@@ -427,6 +448,24 @@ def external_confirm_view(request):
         'external_fee'
     )
 
+    secret_code = request.POST.get(
+        "secret_code"
+    )
+
+    if not check_password(
+        secret_code,
+        user.secret_code
+    ):
+
+        messages.error(
+            request,
+            "Invalid secret code."
+        )
+
+        return redirect(
+            "/external-confirm/"
+        )
+
     if request.method == "POST":
 
         Withdrawal.objects.create(
@@ -435,12 +474,16 @@ def external_confirm_view(request):
             amount=amount,
             fee=fee,
             status='PENDING',
-            visible_to_admin=False
+            visible_to_admin=False,
+            transaction=tx
         )
+
+        user.locked_balance += Decimal(amount) + Decimal(fee)
+        user.save()
 
         editable_until = timezone.now() + timedelta(minutes=10)
         
-        Transaction.objects.create(
+        tx = Transaction.objects.create(
             user=user,
             transaction_type="EXTERNAL",
             amount=amount,
@@ -485,15 +528,15 @@ def external_confirm_view(request):
         }
     )
 
+
 def sell_view(request):
-    edit_tx = None
 
     user_id = request.session.get(
         "wallet_user_id"
     )
 
     if not user_id:
-        return redirect('/')
+        return redirect("/")
 
     user = WalletUser.objects.get(
         id=user_id
@@ -502,16 +545,16 @@ def sell_view(request):
     settings = SystemSettings.objects.first()
 
     rate = Decimal(
-        settings.usd_rwf_rate
+        str(settings.usd_rwf_rate)
     )
 
     sell_rate = rate - (
         rate * Decimal("0.02")
     )
 
-    if request.method == "POST":
+    edit_tx = None
 
-        print(request.POST)
+    if request.method == "POST":
 
         amount_value = request.POST.get(
             "amount"
@@ -525,7 +568,7 @@ def sell_view(request):
             )
 
             return redirect(
-                '/sell/'
+                "/sell/"
             )
 
         amount = Decimal(
@@ -540,34 +583,45 @@ def sell_view(request):
             "receiver_name"
         )
 
-        if user.balance < amount:
+        secret_code = request.POST.get(
+            "secret_code"
+        )
+
+        if not check_password(
+            secret_code,
+            user.secret_code
+        ):
 
             messages.error(
                 request,
-                "Insufficient balance."
+                "Invalid secret code."
             )
 
             return redirect(
-                '/sell/'
+                "/sell/"
+            )
+
+        if user.available_balance < amount:
+
+            messages.error(
+                request,
+                "Insufficient available balance."
+            )
+
+            return redirect(
+                "/sell/"
             )
 
         rwf_amount = (
             amount * sell_rate
         )
 
-        SellOrder.objects.create(
-            user=user,
-            amount=amount,
-            rwf_amount=rwf_amount,
-            phone_number=phone,
-            receiver_name=receiver_name,
-            status='PENDING',
-            visible_to_admin=False
+        editable_until = (
+            timezone.now() +
+            timedelta(minutes=10)
         )
 
-        editable_until = timezone.now() + timedelta(minutes=10)
-        
-        Transaction.objects.create(
+        tx = Transaction.objects.create(
             user=user,
             transaction_type="SELL",
             amount=amount,
@@ -577,35 +631,34 @@ def sell_view(request):
             editable_until=editable_until
         )
 
-        messages.success(
-            request,
-            "Sell request submitted."
+        SellOrder.objects.create(
+            user=user,
+            amount=amount,
+            rwf_amount=rwf_amount,
+            phone_number=phone,
+            receiver_name=receiver_name,
+            status="PENDING",
+            visible_to_admin=False
         )
 
-        edit_tx = None
+        user.locked_balance += amount
+        user.save()
 
-        edit_id = request.session.get(
-            "edit_tx_id"
+        messages.success(
+            request,
+            "Sell request submitted successfully."
         )
 
         return redirect(
-            '/dashboard/'
+            "/dashboard/"
         )
-
-        if edit_id:
-
-            edit_tx = Transaction.objects.filter(
-                id=edit_id,
-                user=user,
-                transaction_type="SELL"
-            ).first()
 
     return render(
         request,
         "transactions/sell.html",
         {
             "user": user,
-            'rate': sell_rate,
+            "rate": sell_rate,
             "edit_tx": edit_tx
         }
     )
@@ -617,23 +670,25 @@ def cancel_transaction_view(request, pk):
     )
 
     if not user_id:
-        return redirect('/')
+        return redirect("/")
 
     transaction = get_object_or_404(
         Transaction,
         id=pk,
         user_id=user_id,
-        status='PENDING'
+        status="PENDING"
     )
+
+    user = transaction.user
 
     if transaction.transaction_type == "DEPOSIT":
 
         Deposit.objects.filter(
             user_id=user_id,
             amount=transaction.amount,
-            status='PENDING'
+            status="PENDING"
         ).update(
-            status='CANCELLED',
+            status="CANCELLED",
             processed=True
         )
 
@@ -642,9 +697,9 @@ def cancel_transaction_view(request, pk):
         BuyOrder.objects.filter(
             user_id=user_id,
             amount=transaction.amount,
-            status='PENDING'
+            status="PENDING"
         ).update(
-            status='CANCELLED',
+            status="CANCELLED",
             processed=True
         )
 
@@ -653,24 +708,43 @@ def cancel_transaction_view(request, pk):
         SellOrder.objects.filter(
             user_id=user_id,
             amount=transaction.amount,
-            status='PENDING'
+            status="PENDING"
         ).update(
-            status='CANCELLED',
+            status="CANCELLED",
             processed=True
         )
+
+        user.locked_balance -= transaction.amount
+
+        if user.locked_balance < 0:
+            user.locked_balance = 0
+
+        user.save()
 
     elif transaction.transaction_type == "EXTERNAL":
 
         Withdrawal.objects.filter(
             user_id=user_id,
             amount=transaction.amount,
-            status='PENDING'
+            status="PENDING"
         ).update(
-            status='CANCELLED',
+            status="CANCELLED",
             processed=True
         )
 
-    transaction.status = 'CANCELLED'
+        amount_to_unlock = transaction.amount
+
+        if transaction.fee:
+            amount_to_unlock += transaction.fee
+
+        user.locked_balance -= amount_to_unlock
+
+        if user.locked_balance < 0:
+            user.locked_balance = 0
+
+        user.save()
+
+    transaction.status = "CANCELLED"
     transaction.save()
 
     messages.success(
@@ -678,4 +752,4 @@ def cancel_transaction_view(request, pk):
         "Transaction cancelled successfully."
     )
 
-    return redirect('history')
+    return redirect("history")

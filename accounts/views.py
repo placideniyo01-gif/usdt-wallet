@@ -40,7 +40,7 @@ def register_view(request):
             names=names,
             phone_number=phone,
             wallet_code=wallet_code,
-            secret_code=make_password(secret)
+            secret_code=make_password(secret_code)
         )
 
         return render(
@@ -132,6 +132,11 @@ def dashboard_view(request):
         created_at__lte=timezone.now() - timedelta(minutes=10)
     ).update(
         visible_to_admin=True
+    )
+
+    available_balance = (
+        user.balance -
+        user.locked_balance
     )
 
     return render(

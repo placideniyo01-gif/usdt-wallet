@@ -25,9 +25,16 @@ class WalletUser(models.Model):
         default=0
     )
 
+    locked_balance = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        default=0
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
 
-    def __str__(self):
-        return self.wallet_code
+    @property
+    def available_balance(self):
+        return self.balance - self.locked_balance
