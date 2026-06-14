@@ -86,9 +86,14 @@ class Transaction(models.Model):
         blank=True
     )
 
+    visible_to_admin_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     def __str__(self):
         return self.transaction_type
-
+        
 class Deposit(models.Model):
 
     STATUS = (
