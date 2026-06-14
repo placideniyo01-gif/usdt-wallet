@@ -77,33 +77,23 @@ def deposit_view(request):
 
 def buy_view(request):
 
-    user_id = request.session.get(
-        "wallet_user_id"
-    )
+    user_id = request.session.get("wallet_user_id")
 
     if not user_id:
         return redirect('/')
 
-    user = WalletUser.objects.get(
-        id=user_id
-    )
+    user = WalletUser.objects.get(id=user_id)
 
+    settings = SystemSettings.objects.first()
 
     rate = Decimal(str(settings.usd_rwf_rate))
-
-    rate = rate + (
-        rate * Decimal("0.02")
-    )
+    rate = rate + (rate * Decimal("0.02"))
 
     if request.method == "POST":
 
-        amount = Decimal(
-            request.POST.get("amount")
-        )
+        amount = Decimal(request.POST.get("amount"))
 
-        screenshot = request.FILES.get(
-            "screenshot"
-        )
+        screenshot = request.FILES.get("screenshot")
 
         rwf_amount = amount * rate
 
@@ -115,8 +105,9 @@ def buy_view(request):
             status='PENDING',
             visible_to_admin=False
         )
+
         editable_until = timezone.now() + timedelta(minutes=10)
-        
+
         Transaction.objects.create(
             user=user,
             transaction_type="BUY",
