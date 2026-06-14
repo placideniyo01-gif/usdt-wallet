@@ -45,10 +45,12 @@ def deposit_view(request):
             user=user,
             amount=amount,
             screenshot=screenshot,
-            status='PENDING'
+            status='PENDING',
+            visible_to_admin=False
         )
-        editable_until = timezone.now() + timedelta(minutes=10)
 
+        editable_until = timezone.now() + timedelta(minutes=10)
+        
         Transaction.objects.create(
             user=user,
             transaction_type="DEPOSIT",
@@ -111,12 +113,12 @@ def buy_view(request):
         BuyOrder.objects.create(
             user=user,
             amount=amount,
-            rwf_amount=rwf_amount,
             screenshot=screenshot,
-            status='PENDING'
+            status='PENDING',
+            visible_to_admin=False
         )
         editable_until = timezone.now() + timedelta(minutes=10)
-
+        
         Transaction.objects.create(
             user=user,
             transaction_type="BUY",
@@ -438,15 +440,16 @@ def external_confirm_view(request):
 
     if request.method == "POST":
 
-        Withdrawal.objects.create(
+        withdrawal.objects.create(
             user=user,
-            wallet_address=wallet_address,
             amount=amount,
-            fee=fee,
-            status='PENDING'
+            screenshot=screenshot,
+            status='PENDING',
+            visible_to_admin=False
         )
-        editable_until = timezone.now() + timedelta(minutes=10)
 
+        editable_until = timezone.now() + timedelta(minutes=10)
+        
         Transaction.objects.create(
             user=user,
             transaction_type="EXTERNAL",
@@ -565,13 +568,13 @@ def sell_view(request):
         SellOrder.objects.create(
             user=user,
             amount=amount,
-            rwf_amount=rwf_amount,
-            phone_number=phone,
-            receiver_name=receiver_name,
-            status='PENDING'
+            screenshot=screenshot,
+            status='PENDING',
+            visible_to_admin=False
         )
-        editable_until = timezone.now() + timedelta(minutes=10)
 
+        editable_until = timezone.now() + timedelta(minutes=10)
+        
         Transaction.objects.create(
             user=user,
             transaction_type="SELL",

@@ -93,7 +93,7 @@ class Transaction(models.Model):
 
     def __str__(self):
         return self.transaction_type
-        
+
 class Deposit(models.Model):
 
     STATUS = (
@@ -141,6 +141,10 @@ class Deposit(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True
+    )
+
+    visible_to_admin = models.BooleanField(
+        default=False
     )
 
     def __str__(self):
@@ -200,6 +204,10 @@ class BuyOrder(models.Model):
         blank=True
     )
 
+    visible_to_admin = models.BooleanField(
+        default=False
+    )
+
     def __str__(self):
         return f"Buy {self.user}"
 
@@ -255,6 +263,10 @@ class Withdrawal(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True
+    )
+
+    visible_to_admin = models.BooleanField(
+        default=False
     )
 
     def __str__(self):
@@ -316,6 +328,10 @@ class SellOrder(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True
+    )
+
+    visible_to_admin = models.BooleanField(
+        default=False
     )
 
     def __str__(self):

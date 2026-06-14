@@ -21,6 +21,14 @@ class DepositAdmin(admin.ModelAdmin):
         'status',
     )
 
+    def get_queryset(self, request):
+
+        qs = super().get_queryset(request)
+
+        return qs.filter(
+            visible_to_admin=True
+        )
+
     def save_model(
         self,
         request,
@@ -94,6 +102,14 @@ class BuyOrderAdmin(admin.ModelAdmin):
     list_editable = (
         'status',
     )
+
+    def get_queryset(self, request):
+
+        qs = super().get_queryset(request)
+
+        return qs.filter(
+            visible_to_admin=True
+        )
 
     def save_model(
         self,
@@ -169,6 +185,14 @@ class WithdrawalAdmin(admin.ModelAdmin):
     list_editable = (
         'status',
     )
+
+    def get_queryset(self, request):
+
+        qs = super().get_queryset(request)
+
+        return qs.filter(
+            visible_to_admin=True
+        )
 
     def save_model(
         self,
@@ -250,6 +274,14 @@ class SellOrderAdmin(admin.ModelAdmin):
     list_editable = (
         'status',
     )
+
+    def get_queryset(self, request):
+
+        qs = super().get_queryset(request)
+
+        return qs.filter(
+            visible_to_admin=True
+        )
 
     def save_model(
         self,

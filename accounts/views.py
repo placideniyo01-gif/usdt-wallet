@@ -102,6 +102,38 @@ def dashboard_view(request):
         '-created_at'
     )[:10]
 
+    Deposit.objects.filter(
+        visible_to_admin=False,
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
+    ).update(
+        visible_to_admin=True
+    )
+
+    BuyOrder.objects.filter(
+        visible_to_admin=False,
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
+    ).update(
+        visible_to_admin=True
+    )
+
+    Withdrawal.objects.filter(
+        visible_to_admin=False,
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
+    ).update(
+        visible_to_admin=True
+    )
+
+    SellOrder.objects.filter(
+        visible_to_admin=False,
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
+    ).update(
+        visible_to_admin=True
+    )
+
     return render(
         request,
         "accounts/dashboard.html",
