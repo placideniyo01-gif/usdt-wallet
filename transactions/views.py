@@ -631,6 +631,50 @@ def cancel_transaction_view(request, pk):
         status='PENDING'
     )
 
+    if transaction.transaction_type == "DEPOSIT":
+
+        Deposit.objects.filter(
+            user_id=user_id,
+            amount=transaction.amount,
+            status='PENDING'
+        ).update(
+            status='CANCELLED',
+            processed=True
+        )
+
+    elif transaction.transaction_type == "BUY":
+
+        BuyOrder.objects.filter(
+            user_id=user_id,
+            amount=transaction.amount,
+            status='PENDING'
+        ).update(
+            status='CANCELLED',
+            processed=True
+        )
+
+    elif transaction.transaction_type == "SELL":
+
+        SellOrder.objects.filter(
+            user_id=user_id,
+            amount=transaction.amount,
+            status='PENDING'
+        ).update(
+            status='CANCELLED',
+            processed=True
+        )
+
+    elif transaction.transaction_type == "EXTERNAL":
+
+        Withdrawal.objects.filter(
+            user_id=user_id,
+            amount=transaction.amount,
+            status='PENDING'
+        ).update(
+            status='CANCELLED',
+            processed=True
+        )
+
     transaction.status = 'CANCELLED'
     transaction.save()
 

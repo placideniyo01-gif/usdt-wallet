@@ -31,6 +31,23 @@ class DepositAdmin(admin.ModelAdmin):
 
         if change:
 
+            tx = Transaction.objects.filter(
+                user=obj.user,
+                transaction_type='DEPOSIT',
+                amount=obj.amount
+            ).order_by('-created_at').first()
+
+            if tx and tx.status == "CANCELLED":
+                obj.status = "CANCELLED"
+                obj.processed = True
+
+                super().save_model(
+                    request,
+                    obj,
+                    form,
+                    change
+                )
+                return
             old = Deposit.objects.get(
                 pk=obj.pk
             )
@@ -88,6 +105,23 @@ class BuyOrderAdmin(admin.ModelAdmin):
 
         if change:
 
+            tx = Transaction.objects.filter(
+                user=obj.user,
+                transaction_type='BUY',
+                amount=obj.amount
+            ).order_by('-created_at').first()
+
+            if tx and tx.status == "CANCELLED":
+                obj.status = "CANCELLED"
+                obj.processed = True
+
+                super().save_model(
+                    request,
+                    obj,
+                    form,
+                    change
+                )
+                return
             old = BuyOrder.objects.get(
                 pk=obj.pk
             )
@@ -146,6 +180,23 @@ class WithdrawalAdmin(admin.ModelAdmin):
 
         if change:
 
+            tx = Transaction.objects.filter(
+                user=obj.user,
+                transaction_type='WITHDRAWAL',
+                amount=obj.amount
+            ).order_by('-created_at').first()
+
+            if tx and tx.status == "CANCELLED":
+                obj.status = "CANCELLED"
+                obj.processed = True
+
+                super().save_model(
+                    request,
+                    obj,
+                    form,
+                    change
+                )
+                return
             old = Withdrawal.objects.get(
                 pk=obj.pk
             )
@@ -210,6 +261,23 @@ class SellOrderAdmin(admin.ModelAdmin):
 
         if change:
 
+            tx = Transaction.objects.filter(
+                user=obj.user,
+                transaction_type='SELL',
+                amount=obj.amount
+            ).order_by('-created_at').first()
+
+            if tx and tx.status == "CANCELLED":
+                obj.status = "CANCELLED"
+                obj.processed = True
+
+                super().save_model(
+                    request,
+                    obj,
+                    form,
+                    change
+                )
+                return
             old = SellOrder.objects.get(
                 pk=obj.pk
             )
