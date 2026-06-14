@@ -88,14 +88,11 @@ def buy_view(request):
         id=user_id
     )
 
-    settings = SystemSettings.objects.first()
 
-    rate = Decimal(
-        settings.usd_rwf_rate
-    )
+    rate = Decimal(str(settings.usd_rwf_rate))
 
     rate = rate + (
-        rate * 0.02
+        rate * Decimal("0.02")
     )
 
     if request.method == "POST":
