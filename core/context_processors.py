@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import Sum
-
+from django.utils import timezone
+from datetime import timedelta
 from accounts.models import WalletUser
 
 from transactions.models import (
@@ -19,19 +20,23 @@ def admin_stats(request):
     )['balance__sum'] or 0
 
     pending_deposits = Deposit.objects.filter(
-        status='PENDING'
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
     ).count()
 
     pending_buys = BuyOrder.objects.filter(
-        status='PENDING'
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
     ).count()
 
     pending_withdrawals = Withdrawal.objects.filter(
-        status='PENDING'
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
     ).count()
 
     pending_sells = SellOrder.objects.filter(
-        status='PENDING'
+        status='PENDING',
+        created_at__lte=timezone.now() - timedelta(minutes=10)
     ).count()
 
     return {
