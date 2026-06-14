@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.contrib import messages
 from .models import WalletUser
-
+from datetime import timedelta
 
 def generate_wallet_code():
 
