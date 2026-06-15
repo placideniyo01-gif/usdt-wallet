@@ -64,7 +64,7 @@ Pending
 
 {% if tx.status == "PENDING" and now <= tx.editable_until %}
 <form method="POST"
-      action="/cancel-test/{{ tx.id }}/">
+      action="/cancel-transaction/{{ tx.id }}/">
 
     {% csrf_token %}
 

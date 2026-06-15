@@ -60,7 +60,7 @@ urlpatterns = [
     ),
 
     path(
-        'cancel-test/<int:pk>/',
+        'cancel-transaction/<int:pk>/',
         views.cancel_transaction_view,
         name='cancel_transaction'
     ),

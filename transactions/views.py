@@ -671,15 +671,14 @@ def sell_view(request):
 
 def cancel_transaction_view(request, pk):
 
-    print("CANCEL VIEW HIT")
-    print("METHOD =", request.method)
-    print("TX =", pk)
-
     user_id = request.session.get(
         "wallet_user_id"
     )
 
     if not user_id:
+        return redirect("/")
+
+    if request.method != "POST":
         return redirect("/")
 
     transaction = get_object_or_404(
@@ -726,9 +725,6 @@ def cancel_transaction_view(request, pk):
 
         user.locked_balance -= transaction.amount
 
-        print("AMOUNT:", transaction.amount)
-        print("AFTER:", user.locked_balance)
-
         if user.locked_balance < 0:
             user.locked_balance = 0
 
@@ -752,11 +748,7 @@ def cancel_transaction_view(request, pk):
         if transaction.fee:
             amount_to_unlock += transaction.fee
 
-        print("UNLOCK:", amount_to_unlock)
-
         user.locked_balance -= amount_to_unlock
-
-        print("AFTER:", user.locked_balance)
 
         if user.locked_balance < 0:
             user.locked_balance = 0
@@ -770,6 +762,5 @@ def cancel_transaction_view(request, pk):
         request,
         "Transaction cancelled successfully."
     )
-    print("CANCEL COMPLETED")
 
-    return redirect("history")
+    return redirect("/")
