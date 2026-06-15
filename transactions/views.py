@@ -42,17 +42,8 @@ def deposit_view(request):
             "screenshot"
         )
 
-        Deposit.objects.create(
-            user=user,
-            amount=amount,
-            screenshot=screenshot,
-            status='PENDING',
-            visible_to_admin=False,
-            transaction=tx
-        )
-
         editable_until = timezone.now() + timedelta(minutes=10)
-        
+
         tx = Transaction.objects.create(
             user=user,
             transaction_type="DEPOSIT",
@@ -62,6 +53,14 @@ def deposit_view(request):
             editable_until=editable_until
         )
 
+        Deposit.objects.create(
+            user=user,
+            amount=amount,
+            screenshot=screenshot,
+            status="PENDING",
+            visible_to_admin=False,
+            transaction=tx
+        )
         messages.success(
             request,
             "Deposit submitted successfully."
@@ -99,16 +98,6 @@ def buy_view(request):
 
         rwf_amount = amount * rate
 
-        BuyOrder.objects.create(
-            user=user,
-            amount=amount,
-            rwf_amount=rwf_amount,
-            screenshot=screenshot,
-            status='PENDING',
-            visible_to_admin=False,
-            transaction=tx
-        )
-
         editable_until = timezone.now() + timedelta(minutes=10)
 
         tx = Transaction.objects.create(
@@ -121,6 +110,15 @@ def buy_view(request):
             editable_until=editable_until
         )
 
+        BuyOrder.objects.create(
+            user=user,
+            amount=amount,
+            rwf_amount=rwf_amount,
+            screenshot=screenshot,
+            status="PENDING",
+            visible_to_admin=False,
+            transaction=tx
+        )
         return render(
             request,
             "transactions/buy_success.html"
@@ -184,7 +182,7 @@ def internal_transfer_view(request):
                 '/internal-transfer/'
             )
 
-        if sender.balance < amount:
+        if sender.available_balance < amount:
 
             messages.error(
                 request,
@@ -490,7 +488,8 @@ def external_confirm_view(request):
             amount=amount,
             fee=fee,
             status='PENDING',
-            visible_to_admin=False
+            visible_to_admin=False,
+            transaction=tx
         )
 
         user.locked_balance += (
@@ -644,7 +643,8 @@ def sell_view(request):
             phone_number=phone,
             receiver_name=receiver_name,
             status="PENDING",
-            visible_to_admin=False
+            visible_to_admin=False,
+            transaction=tx
         )
 
         user.locked_balance += amount
@@ -711,14 +711,14 @@ def cancel_transaction_view(request, pk):
 
     elif transaction.transaction_type == "SELL":
 
-        SellOrder.objects.filter(
-            user_id=user_id,
-            amount=transaction.amount,
-            status="PENDING"
-        ).update(
-            status="CANCELLED",
-            processed=True
-        )
+        sell_order = SellOrder.objects.filter(
+            transaction=transaction
+        ).first()
+
+        if sell_order:
+            sell_order.status = "CANCELLED"
+            sell_order.processed = True
+            sell_order.save()
 
         user.locked_balance -= transaction.amount
 
@@ -729,14 +729,14 @@ def cancel_transaction_view(request, pk):
 
     elif transaction.transaction_type == "EXTERNAL":
 
-        Withdrawal.objects.filter(
-            user_id=user_id,
-            amount=transaction.amount,
-            status="PENDING"
-        ).update(
-            status="CANCELLED",
-            processed=True
-        )
+        withdrawal = Withdrawal.objects.filter(
+            transaction=transaction
+        ).first()
+
+        if withdrawal:
+            withdrawal.status = "CANCELLED"
+            withdrawal.processed = True
+            withdrawal.save()
 
         amount_to_unlock = transaction.amount
 
