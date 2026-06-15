@@ -722,12 +722,17 @@ def cancel_transaction_view(request, pk):
 
         user.locked_balance -= transaction.amount
 
+        print("AMOUNT:", transaction.amount)
+        print("AFTER:", user.locked_balance)
+
         if user.locked_balance < 0:
             user.locked_balance = 0
 
         user.save()
 
     elif transaction.transaction_type == "EXTERNAL":
+
+        print("BEFORE:", user.locked_balance)
 
         withdrawal = Withdrawal.objects.filter(
             transaction=transaction
@@ -743,7 +748,11 @@ def cancel_transaction_view(request, pk):
         if transaction.fee:
             amount_to_unlock += transaction.fee
 
+        print("UNLOCK:", amount_to_unlock)
+
         user.locked_balance -= amount_to_unlock
+
+        print("AFTER:", user.locked_balance)
 
         if user.locked_balance < 0:
             user.locked_balance = 0

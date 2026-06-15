@@ -138,6 +138,9 @@ def dashboard_view(request):
         user.balance -
         user.locked_balance
     )
+    print("BALANCE:", user.balance)
+    print("LOCKED:", user.locked_balance)
+    print("AVAILABLE:", user.available_balance)
 
     return render(
         request,
