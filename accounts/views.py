@@ -85,6 +85,8 @@ def login_view(request):
 
 def dashboard_view(request):
 
+    print("DASHBOARD VERSION 7a16bff")
+    
     user_id = request.session.get(
         "wallet_user_id"
     )
