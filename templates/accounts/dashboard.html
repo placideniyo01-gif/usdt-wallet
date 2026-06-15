@@ -159,11 +159,19 @@ Recent Activity
 {% if now <= tx.editable_until %}
 <br><br>
 
-<a href="{% url 'cancel_transaction' tx.id %}"
-   class="btn btn-sm btn-danger"
-   onclick="return confirm('Are you sure you want to cancel this transaction?')">
-   Cancel
-</a>
+<form method="POST"
+      action="{% url 'cancel_transaction' tx.id %}"
+      style="display:inline;">
+
+    {% csrf_token %}
+
+    <button type="submit"
+            class="btn btn-sm btn-danger"
+            onclick="return confirm('Are you sure you want to cancel this transaction?')">
+        Cancel
+    </button>
+
+</form>
 
 {% endif %}
 
