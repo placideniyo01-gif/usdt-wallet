@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from transactions import views as transaction_views
 from accounts import views as account_views
-
+print("TRANSACTION URLS LOADED")
 urlpatterns = [
 
     path(
