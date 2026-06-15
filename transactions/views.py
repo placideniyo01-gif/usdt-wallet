@@ -448,41 +448,31 @@ def external_confirm_view(request):
         'external_fee'
     )
 
-    secret_code = request.POST.get(
-        "secret_code"
-    )
-
-    if not check_password(
-        secret_code,
-        user.secret_code
-    ):
-
-        messages.error(
-            request,
-            "Invalid secret code."
-        )
-
-        return redirect(
-            "/external-confirm/"
-        )
-
     if request.method == "POST":
 
-        Withdrawal.objects.create(
-            user=user,
-            wallet_address=wallet_address,
-            amount=amount,
-            fee=fee,
-            status='PENDING',
-            visible_to_admin=False,
-            transaction=tx
+        secret_code = request.POST.get(
+            "secret_code"
         )
 
-        user.locked_balance += Decimal(amount) + Decimal(fee)
-        user.save()
+        if not check_password(
+            secret_code,
+            user.secret_code
+        ):
 
-        editable_until = timezone.now() + timedelta(minutes=10)
-        
+            messages.error(
+                request,
+                "Invalid secret code."
+            )
+
+            return redirect(
+                "/external-confirm/"
+            )
+
+        editable_until = (
+            timezone.now() +
+            timedelta(minutes=10)
+        )
+
         tx = Transaction.objects.create(
             user=user,
             transaction_type="EXTERNAL",
@@ -493,6 +483,22 @@ def external_confirm_view(request):
             description=f"Withdrawal to {wallet_address}",
             editable_until=editable_until
         )
+
+        Withdrawal.objects.create(
+            user=user,
+            wallet_address=wallet_address,
+            amount=amount,
+            fee=fee,
+            status='PENDING',
+            visible_to_admin=False
+        )
+
+        user.locked_balance += (
+            Decimal(amount) +
+            Decimal(fee)
+        )
+
+        user.save()
 
         request.session.pop(
             'external_wallet_address',
