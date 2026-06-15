@@ -32,7 +32,7 @@ def register_view(request):
 
         names = request.POST.get("names")
         phone = request.POST.get("phone")
-        secret = request.POST.get("secret")
+        secret_code = request.POST.get("secret")
 
         wallet_code = generate_wallet_code()
 
