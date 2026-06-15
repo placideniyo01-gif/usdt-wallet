@@ -8,7 +8,7 @@
 
         <h3>Sell USDT</h3>
 
-        <form method="POST">
+        <form method="POST" autocomplete="off">
 
             {% csrf_token %}
 
@@ -19,7 +19,9 @@
                 step="0.01"
                 name="amount"
                 id="amount"
-                class="form-control">
+                class="form-control"
+                value=""
+                autocomplete="off">
 
             <br>
 
@@ -41,7 +43,9 @@
                 type="text"
                 name="phone"
                 class="form-control"
-                placeholder="07XXXXXXXX">
+                placeholder="07XXXXXXXX"
+                value=""
+                autocomplete="off">
 
             <br>
 
@@ -51,7 +55,9 @@
                 type="text"
                 name="receiver_name"
                 class="form-control"
-                placeholder="Enter registered name">
+                placeholder="Enter registered name"
+                value=""
+                autocomplete="off">
 
             <br>
 
@@ -69,6 +75,8 @@
                 name="secret_code"
                 class="form-control"
                 placeholder="Enter your secret code"
+                value=""
+                autocomplete="new-password"
                 required>
 
             <br>
