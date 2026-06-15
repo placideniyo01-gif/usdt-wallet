@@ -446,6 +446,21 @@ def external_confirm_view(request):
         'external_fee'
     )
 
+    print("WALLET:", wallet_address)
+    print("AMOUNT:", amount)
+    print("FEE:", fee)
+
+    if not wallet_address or not amount or not fee:
+
+        messages.error(
+            request,
+            "Withdrawal session expired. Please start again."
+        )
+
+        return redirect(
+            "/external-wallet/"
+        )
+
     if request.method == "POST":
 
         secret_code = request.POST.get(
@@ -679,7 +694,7 @@ def cancel_transaction_view(request, pk):
         return redirect("/")
 
     if request.method != "POST":
-        return redirect("/")
+        return redirect("/dashboard/")
 
     transaction = get_object_or_404(
         Transaction,
@@ -763,4 +778,6 @@ def cancel_transaction_view(request, pk):
         "Transaction cancelled successfully."
     )
 
-    return redirect("/")
+    return redirect(
+        "/dashboard/"
+    )
