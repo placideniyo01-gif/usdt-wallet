@@ -4,112 +4,86 @@
 
 <div class="container py-4">
 
-<div class="glass-card p-4">
+    <div class="glass-card p-4">
 
-<h3>
+        <h3>Sell USDT</h3>
 
-Sell USDT
+        <form method="POST">
 
-</h3>
+            {% csrf_token %}
 
-<form method="POST">
+            <label>Amount</label>
 
-{% csrf_token %}
+            <input
+                type="number"
+                step="0.01"
+                name="amount"
+                id="amount"
+                class="form-control">
 
-<label>
+            <br>
 
-Amount
+            <div class="alert alert-info">
 
-</label>
+                Rate:
+                <strong>{{ rate }}</strong>
 
-<input
-type="number"
-step="0.01"
-name="amount"
-id="amount"
-class="form-control"
-value="{% if edit_tx %}{{ edit_tx.amount }}{% endif %}">
+                <br>
 
-<br>
+                You Receive:
+                <strong id="rwf">0 RWF</strong>
 
-<div class="alert alert-info">
+            </div>
 
-Rate:
-<strong>
+            <label>MTN Number</label>
 
-{{ rate }}
+            <input
+                type="text"
+                name="phone"
+                class="form-control"
+                placeholder="07XXXXXXXX">
 
-</strong>
+            <br>
 
-<br>
+            <label>Registered Name</label>
 
-You Receive:
+            <input
+                type="text"
+                name="receiver_name"
+                class="form-control"
+                placeholder="Enter registered name">
 
-<strong id="rwf">
+            <br>
 
-0 RWF
+            <div class="alert alert-warning">
 
-</strong>
+                Names entered above must match
+                the names registered on the MTN number.
 
-</div>
+            </div>
 
-<label>
+            <label>Secret Code</label>
 
-MTN Number
+            <input
+                type="password"
+                name="secret_code"
+                class="form-control"
+                placeholder="Enter your secret code"
+                required>
 
-</label>
+            <br>
 
-<input
-type="text"
-name="phone"
-class="form-control"
-value="{% if edit_tx %}{{ edit_tx.description }}{% endif %}">
+            <button
+                type="submit"
+                class="btn btn-danger w-100">
 
-<br>
+                Sell USDT
 
-<label>
+            </button>
 
-Registered Name
+        </form>
 
-</label>
-
-<input
-type="text"
-name="receiver_name"
-class="form-control">
-
-<br>
-
-<div class="alert alert-warning">
-
-Names entered above must match
-the names registered on the MTN number.
-
-<label>
-
-Secret Code
-
-</label>
-
-<input
-type="password"
-name="secret_code"
-class="form-control"
-placeholder="Enter your secret code"
-required>
-
-<br>
-
-<button
-class="btn btn-danger w-100">
-
-Sell USDT
-
-</button>
-
-</form>
-
-</div>
+    </div>
 
 </div>
 
@@ -118,25 +92,23 @@ Sell USDT
 document
 .getElementById('amount')
 .addEventListener(
-'input',
-function(){
+    'input',
+    function(){
 
-let amount =
-parseFloat(this.value)||0
+        let amount =
+        parseFloat(this.value) || 0;
 
-let rate =
-{{ rate }}
+        let rate =
+        {{ rate }};
 
-document
-.getElementById(
-'rwf'
-).innerHTML =
-Math.round(
-amount*rate
-)
+        document
+        .getElementById('rwf')
+        .innerHTML =
+        Math.round(amount * rate)
+        .toLocaleString() + " RWF";
 
-}
-)
+    }
+);
 
 </script>
 

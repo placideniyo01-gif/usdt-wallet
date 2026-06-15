@@ -4,158 +4,104 @@
 
 <div class="container py-4">
 
-<div class="glass-card p-4">
+    <div class="glass-card p-4">
 
-<h3>
+        <h3>
+            Confirm Transfer
+        </h3>
 
-Confirm Transfer
+        <div class="alert alert-warning mt-3">
 
-</h3>
+            You are about to send
 
-<div class="alert alert-warning mt-3">
+            <strong>
+                {{ amount }} USDT
+            </strong>
 
-You are about to send
+            to
 
-<strong>
+            <strong>
+                {{ receiver_name }}
+            </strong>
 
-{{ amount }} USDT
+        </div>
 
-</strong>
+        <div class="glass-card p-3 mt-3">
 
-to
+            <p>
+                Wallet Code
+            </p>
 
-<strong>
+            <h6>
+                {{ wallet_code }}
+            </h6>
 
-{{ receiver_name }}
+        </div>
 
-</strong>
+        <form
+            method="POST"
+            action="/internal-confirm/">
 
-</div>
+            {% csrf_token %}
 
-<div class="glass-card p-3 mt-3">
+            <input
+                type="hidden"
+                name="wallet_code"
+                value="{{ wallet_code }}">
 
-<p>
+            <input
+                type="hidden"
+                name="amount"
+                value="{{ amount }}">
 
-Wallet Code
+            <div class="mt-4">
 
-</p>
+                <label class="form-label">
 
-<h6>
+                    Secret Code
 
-{{ wallet_code }}
+                </label>
 
-</h6>
+                <input
+                    type="password"
+                    name="secret_code"
+                    class="form-control"
+                    placeholder="Enter your secret code"
+                    required>
 
-</div>
+            </div>
 
-<form
-method="POST"
-action="/internal-confirm/">
+            <div class="row mt-4">
 
-{% csrf_token %}
+                <div class="col-6">
 
-<input
-type="hidden"
-name="wallet_code"
-value="{{ wallet_code }}">
+                    <a
+                        href="/internal-transfer/"
+                        class="btn btn-danger w-100">
 
-<input
-type="hidden"
-name="amount"
-value="{{ amount }}">
+                        Cancel
 
-<div class="row mt-4">
+                    </a>
 
-<div class="col-6">
+                </div>
 
-<a
-href="/internal-transfer/"
-class="btn btn-danger w-100">
+                <div class="col-6">
 
-Cancel
+                    <button
+                        type="submit"
+                        class="btn btn-success w-100">
 
-</a>
+                        Confirm
 
-</div>
+                    </button>
 
-<form
-method="POST"
-action="/internal-confirm/">
+                </div>
 
-{% csrf_token %}
+            </div>
 
-<input
-type="hidden"
-name="wallet_code"
-value="{{ wallet_code }}">
+        </form>
 
-<input
-type="hidden"
-name="amount"
-value="{{ amount }}">
-
-<div class="mt-3">
-
-<label class="form-label">
-
-Secret Code
-
-</label>
-
-<input
-type="password"
-name="secret_code"
-class="form-control"
-placeholder="Enter your secret code"
-required>
-
-</div>
-
-<div class="row mt-4">
-
-<div class="col-6">
-
-<a
-href="/internal-transfer/"
-class="btn btn-danger w-100">
-
-Cancel
-
-</a>
-
-</div>
-
-<div class="col-6">
-
-<button
-class="btn btn-success w-100">
-
-Confirm
-
-</button>
-
-</div>
-
-</div>
-
-</form>
-
-<div class="col-6">
-
-<button
-class="btn btn-success w-100">
-
-Confirm
-
-</button>
-
-</div>
-
-</div>
-
-</form>
-
-</div>
+    </div>
 
 </div>
 
