@@ -18,12 +18,6 @@ urlpatterns = [
     ),
 
     path(
-        'cancel-transaction/<int:pk>/',
-        views.cancel_transaction_view,
-        name='cancel_transaction'
-    ),
-
-    path(
         'forgot-wallet/',
         views.forgot_wallet_view,
         name='forgot_wallet'
