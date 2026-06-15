@@ -671,6 +671,9 @@ def sell_view(request):
 
 def cancel_transaction_view(request, pk):
 
+    print("CANCEL VIEW HIT")
+    print("PK:", pk)
+
     user_id = request.session.get(
         "wallet_user_id"
     )
@@ -766,5 +769,6 @@ def cancel_transaction_view(request, pk):
         request,
         "Transaction cancelled successfully."
     )
+    print("CANCEL COMPLETED")
 
     return redirect("history")
