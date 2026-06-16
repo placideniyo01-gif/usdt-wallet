@@ -289,6 +289,8 @@ from django.contrib import messages
 from accounts.models import WalletUser
 
 
+from django.contrib.auth.hashers import check_password
+
 def forgot_wallet_view(request):
 
     wallet_code = None
@@ -301,13 +303,18 @@ def forgot_wallet_view(request):
 
         user = WalletUser.objects.filter(
             names=names,
-            phone_number=phone,
-            secret_code=secret_code
+            phone_number=phone
         ).first()
 
-        if user:
+        if user and check_password(
+            secret_code,
+            user.secret_code
+        ):
+
             wallet_code = user.wallet_code
+
         else:
+
             messages.error(
                 request,
                 "Information provided is incorrect."

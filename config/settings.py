@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^0s8njx^j=$ylt3u*hqrctqz1u%*=r+8us67+9w5+fozv%+7hu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'usdt-wallet-csy8.onrender.com',
