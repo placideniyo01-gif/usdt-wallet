@@ -4,6 +4,13 @@
 
 <div class="page-space">
 
+<button
+    id="installBtn"
+    class="btn btn-success"
+    style="display:none;">
+    Install App
+</button>
+
 <div class="container py-3">
 
 <div class="d-flex justify-content-between align-items-center">
@@ -361,5 +368,60 @@ setInterval(function(){
     window.location.reload()
 
 },5000)
+
+</script>
+
+<script>
+
+let deferredPrompt;
+
+window.addEventListener(
+    "beforeinstallprompt",
+    (e) => {
+
+        e.preventDefault();
+
+        deferredPrompt = e;
+
+        document
+        .getElementById("installBtn")
+        .style.display = "block";
+
+    }
+);
+
+document
+.getElementById("installBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        if (!deferredPrompt) {
+            return;
+        }
+
+        deferredPrompt.prompt();
+
+        const choice =
+        await deferredPrompt.userChoice;
+
+        if (
+            choice.outcome === "accepted"
+        ) {
+
+            console.log(
+                "PWA installed"
+            );
+
+        }
+
+        deferredPrompt = null;
+
+        document
+        .getElementById("installBtn")
+        .style.display = "none";
+
+    }
+);
 
 </script>
