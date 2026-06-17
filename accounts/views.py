@@ -102,7 +102,7 @@ def dashboard_view(request):
         user=user
     ).order_by(
         '-created_at'
-    )[:10]
+    )[:3]
 
     Deposit.objects.filter(
         visible_to_admin=False,
