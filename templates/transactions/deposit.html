@@ -4,150 +4,224 @@
 
 <div class="container py-4">
 
-<div class="glass-card p-4">
+    <div class="glass-card p-4">
 
-<h3>
+        <h3>Deposit USDT</h3>
 
-Deposit USDT
+        <div class="alert alert-warning mt-3">
 
-</h3>
+            Use TRC20 Network Only
+            <br>
+            Send USDT only.
 
-<div class="alert alert-warning mt-3">
+        </div>
 
-Use TRC20 Network Only
+        <form method="POST" enctype="multipart/form-data">
 
-<br>
+            {% csrf_token %}
 
-Send USDT only.
+            <div class="mb-3">
 
-</div>
+                <label class="form-label">
 
-<form
-method="POST"
-enctype="multipart/form-data">
+                    Amount
 
-{% csrf_token %}
+                </label>
 
-<div class="mb-3">
+                <input
+                    type="number"
+                    step="0.01"
+                    name="amount"
+                    class="form-control"
+                    id="amountInput"
+                    required>
 
-<label>
+            </div>
 
-Amount
+            <div class="alert alert-info">
 
-</label>
+                <h6 class="mb-3">
 
-<input
-type="number"
-step="0.01"
-name="amount"
-class="form-control">
+                    Dear User,
 
-</div>
+                </h6>
 
-<div class="alert alert-info">
+                <p>
 
-<h6 class="mb-3">
-Dear User,
-</h6>
+                    Before confirming your deposit, please send
 
-<p>
+                    <strong>
 
-Before confirming your deposit, please go to your wallet and send
+                        <span id="amountPreview">0</span> USDT
 
-<strong>
-<span id="amountPreview">0</span> USDT
-</strong>
+                    </strong>
 
-to the wallet address below.
+                    to the wallet address below.
 
-</p>
+                </p>
 
-<p>
+                <p>
 
-After completing the transfer, take a screenshot of the transaction proof and upload it here before submitting your deposit request.
+                    After completing the transfer, take a screenshot of the transaction proof and upload it before submitting your deposit request.
 
-</p>
+                </p>
 
-<hr>
+                <hr>
 
-<div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
 
-<div>
+                    TRC20 Wallet Address
 
-<small class="text-muted">
-TRC20 Wallet Address
-</small>
+                </small>
 
-<br>
+                <div
+                    id="walletAddress"
+                    class="mt-2 mb-3"
+                    style="
+                        word-break: break-all;
+                        font-weight:600;
+                        font-size:15px;
+                    ">
 
-<strong id="walletAddress">
+                    {{ settings.trc20_wallet }}
 
-{{ settings.trc20_wallet }}
+                </div>
 
-</strong>
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    onclick="copyWallet()">
 
-</div>
+                    <i class="bi bi-copy"></i>
 
-<button
-type="button"
-class="btn btn-sm btn-outline-primary"
-onclick="copyWallet()">
+                    Copy Address
 
-Copy
+                </button>
 
-</button>
+            </div>
 
-</div>
+            <div class="mb-3">
 
-</div>
+                <label class="form-label">
 
-<div class="mb-3">
+                    Payment Proof
 
-<label>
+                </label>
 
-Payment Proof
+                <input
+                    type="file"
+                    name="screenshot"
+                    class="form-control"
+                    required>
 
-</label>
+            </div>
 
-<input
-type="file"
-name="screenshot"
-class="form-control">
+            <button
+                type="submit"
+                class="btn btn-success w-100">
 
-</div>
+                Confirm Deposit
 
-<button
-class="btn btn-success w-100">
+            </button>
 
-Confirm Deposit
+        </form>
 
-</button>
-
-</form>
-
-</div>
+    </div>
 
 </div>
 
 <script>
 
-document
-.querySelector(
-'input[name="amount"]'
-)
-.addEventListener(
-'input',
-function(){
+function copyWallet() {
 
-document
-.getElementById(
-'amountPreview'
-)
-.innerText =
-this.value
+    const address =
+    document
+    .getElementById("walletAddress")
+    .innerText;
+
+    navigator.clipboard
+    .writeText(address)
+    .then(function () {
+
+        showToast(
+            "Wallet address copied successfully.",
+            "success"
+        );
+
+    })
+    .catch(function () {
+
+        showToast(
+            "Failed to copy wallet address.",
+            "error"
+        );
+
+    });
 
 }
-)
+
+function showToast(message, type){
+
+    let container =
+    document.getElementById(
+        "toast-container"
+    );
+
+    if(!container){
+
+        container =
+        document.createElement("div");
+
+        container.id =
+        "toast-container";
+
+        container.style.position =
+        "fixed";
+
+        container.style.top =
+        "20px";
+
+        container.style.right =
+        "20px";
+
+        container.style.zIndex =
+        "9999";
+
+        container.style.width =
+        "350px";
+
+        document.body.appendChild(
+            container
+        );
+
+    }
+
+    const toast =
+    document.createElement("div");
+
+    toast.className =
+    "toast-message " + type;
+
+    toast.innerHTML =
+    message;
+
+    container.appendChild(
+        toast
+    );
+
+    setTimeout(function(){
+
+        toast.style.opacity = "0";
+
+        setTimeout(function(){
+
+            toast.remove();
+
+        },500);
+
+    },2500);
+
+}
 
 </script>
 
