@@ -868,27 +868,26 @@ def internship_transfer_view(request):
                 "/internship-transfer/"
             )
 
+        logger = logging.getLogger(__name__)
+
+        logger.error("========== INTERNSHIP API ==========")
+        logger.error(response.status_code)
+        logger.error(response.headers)
+        logger.error(response.text)
+
         try:
-
-            logger = logging.getLogger(__name__)
-
-            logger.error(f"STATUS: {response.status_code}")
-            logger.error(f"BODY: {response.text}")
             data = response.json()
 
-        except Exception:
+        except Exception as e:
+
+            logger.exception(e)
 
             messages.error(
-
                 request,
-
-                "Invalid server response."
-
+                f"Invalid server response ({response.status_code})"
             )
 
-            return redirect(
-                "/internship-transfer/"
-            )
+            return redirect("/internship-transfer/")
 
         if not data.get("success"):
 
