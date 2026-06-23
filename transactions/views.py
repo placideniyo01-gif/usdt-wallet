@@ -6,7 +6,8 @@ from .models import (
     Deposit,
     BuyOrder,
     Withdrawal,
-    SellOrder
+    SellOrder,
+    InternshipTransfer
 )
 from accounts.models import WalletUser
 from decimal import Decimal
