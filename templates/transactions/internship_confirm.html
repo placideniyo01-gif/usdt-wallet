@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="glass-card p-4">
+
+        <h3>
+
+            Confirm Internship Transfer
+
+        </h3>
+
+        <div class="alert alert-warning mt-3">
+
+            <h5 class="mb-3">
+
+                Confirmation
+
+            </h5>
+
+            <p>
+
+                You are about to send
+
+                <strong>
+
+                    {{ amount }} USDT
+
+                </strong>
+
+                to
+
+                <strong>
+
+                {{ receiver_name }}
+
+                </strong>
+
+                <br>
+
+                <small>
+
+                Username:
+                {{ username }}
+
+                </small>
+
+            </p>
+
+            <p class="mb-0">
+
+                Please verify that the username is correct before continuing.
+                This transfer cannot be reversed after it is completed.
+
+            </p>
+
+        </div>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+
+                <label>
+
+                    Receiver Username
+
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ username }}"
+                    readonly>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>
+
+                    Amount
+
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ amount }} USDT"
+                    readonly>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>
+
+                    Secret Code
+
+                </label>
+
+                <input
+                    type="password"
+                    name="secret_code"
+                    class="form-control"
+                    placeholder="Enter your secret code"
+                    required>
+
+            </div>
+
+            <div class="d-grid gap-2">
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+
+                    Confirm Transfer
+
+                </button>
+
+                <a
+                    href="/internship-transfer/"
+                    class="btn btn-outline-light">
+
+                    Cancel
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

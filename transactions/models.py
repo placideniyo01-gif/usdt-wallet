@@ -336,3 +336,38 @@ class SellOrder(models.Model):
 
     def __str__(self):
         return f"Sell {self.user}"
+
+class InternshipTransfer(models.Model):
+
+    STATUS_CHOICES = (
+        ("PENDING", "Pending"),
+        ("SUCCESS", "Success"),
+        ("FAILED", "Failed"),
+    )
+
+    user = models.ForeignKey(
+        "accounts.WalletUser",
+        on_delete=models.CASCADE
+    )
+
+    receiver_username = models.CharField(
+        max_length=150
+    )
+
+    amount = models.DecimalField(
+        max_digits=18,
+        decimal_places=2
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="SUCCESS"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"{self.user.wallet_code} -> {self.receiver_username}"

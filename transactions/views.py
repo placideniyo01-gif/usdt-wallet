@@ -15,7 +15,12 @@ from django.utils import timezone
 from datetime import timedelta
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
+import requests
+import json
 
+INTERNSHIP_API = "https://internship-8lo5.onrender.com/api/receive-wallet-transfer/"
+
+INTERNSHIP_SECRET = "9xH72QaLpV81YtZ4FkN3RmA5WsC6BdP8"
 
 def deposit_view(request):
 
@@ -783,4 +788,364 @@ def cancel_transaction_view(request, pk):
 
     return redirect(
         "/dashboard/"
+    )
+
+def internship_transfer_view(request):
+
+    user_id = request.session.get(
+        "wallet_user_id"
+    )
+
+    if not user_id:
+        return redirect("/")
+
+    user = WalletUser.objects.get(
+        id=user_id
+    )
+
+    if request.method == "POST":
+
+        username = request.POST.get(
+            "username"
+        )
+
+        amount = Decimal(
+            request.POST.get("amount")
+        )
+
+        if amount <= 0:
+
+            messages.error(
+                request,
+                "Invalid amount."
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        if user.available_balance < amount:
+
+            messages.error(
+                request,
+                "Insufficient balance."
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        try:
+
+            response = requests.post(
+
+                "https://internship-8lo5.onrender.com/dashboard/api/check-username/",
+
+                json={
+
+                    "username": username,
+
+                    "secret_key": INTERNSHIP_SECRET
+
+                },
+
+                timeout=20
+
+            )
+
+        except requests.exceptions.RequestException:
+
+            messages.error(
+
+                request,
+
+                "Internship Saving server unavailable."
+
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        try:
+
+            data = response.json()
+
+        except Exception:
+
+            messages.error(
+
+                request,
+
+                "Invalid server response."
+
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        if not data.get("success"):
+
+            messages.error(
+
+                request,
+
+                data.get(
+                    "message",
+                    "Username not found."
+                )
+
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        request.session[
+            "internship_username"
+        ] = username
+
+        request.session[
+            "internship_names"
+        ] = data.get(
+            "names"
+        )
+
+        request.session[
+            "internship_amount"
+        ] = str(amount)
+
+        return redirect(
+            "/internship-confirm/"
+        )
+
+    return render(
+        request,
+        "transactions/internship_transfer.html"
+    )
+
+def internship_confirm_view(request):
+
+    user_id = request.session.get(
+        "wallet_user_id"
+    )
+
+    if not user_id:
+        return redirect("/")
+
+    user = WalletUser.objects.get(
+        id=user_id
+    )
+
+    username = request.session.get(
+        "internship_username"
+    )
+
+    receiver_name = request.session.get(
+        "internship_names"
+    )
+
+    amount = request.session.get(
+        "internship_amount"
+    )
+
+    if not username or not amount:
+
+        messages.error(
+            request,
+            "Transfer session expired."
+        )
+
+        return redirect(
+            "/internship-transfer/"
+        )
+
+    if request.method == "POST":
+
+        secret_code = request.POST.get(
+            "secret_code"
+        )
+
+        if not check_password(
+            secret_code,
+            user.secret_code
+        ):
+
+            messages.error(
+                request,
+                "Invalid secret code."
+            )
+
+            return redirect(
+                "/internship-confirm/"
+            )
+
+        amount_decimal = Decimal(amount)
+
+        if user.available_balance < amount_decimal:
+
+            messages.error(
+                request,
+                "Insufficient balance."
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        try:
+
+            response = requests.post(
+
+                INTERNSHIP_API,
+
+                json={
+
+                    "username": username,
+
+                    "amount": str(amount_decimal),
+
+                    "secret_key": INTERNSHIP_SECRET
+
+                },
+
+                timeout=20
+
+            )
+
+        except requests.exceptions.RequestException:
+
+            messages.error(
+
+                request,
+
+                "Internship Saving server is unavailable."
+
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        if response.status_code != 200:
+
+            try:
+
+                data = response.json()
+
+                message = data.get(
+                    "message",
+                    "Transfer failed."
+                )
+
+            except Exception:
+
+                message = "Transfer failed."
+
+            messages.error(
+                request,
+                message
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        try:
+
+            data = response.json()
+
+        except Exception:
+
+            messages.error(
+                request,
+                "Invalid response from Internship Saving."
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        if not data.get("success"):
+
+            messages.error(
+                request,
+                data.get(
+                    "message",
+                    "Transfer failed."
+                )
+            )
+
+            return redirect(
+                "/internship-transfer/"
+            )
+
+        # Deduct balance only after successful API response
+        user.balance -= amount_decimal
+        user.save()
+
+        Transaction.objects.create(
+
+            user=user,
+
+            transaction_type="INTERNSHIP",
+
+            amount=amount_decimal,
+
+            status="APPROVED",
+
+            receiver_wallet=username,
+
+            description=f"Sent to Internship Saving ({username})"
+
+        )
+
+        InternshipTransfer.objects.create(
+
+            user=user,
+
+            receiver_username=username,
+
+            amount=amount_decimal,
+
+            status="SUCCESS"
+
+        )
+
+        request.session.pop(
+            "internship_username",
+            None
+        )
+
+        request.session.pop(
+            "internship_amount",
+            None
+        )
+
+        messages.success(
+            request,
+            f"{amount_decimal} USDT sent successfully to {username}."
+        )
+
+        return redirect(
+            "/dashboard/"
+        )
+
+    return render(
+
+        request,
+
+        "transactions/internship_confirm.html",
+
+        {
+
+            "username": username,
+
+            "receiver_name": receiver_name,
+
+            "amount": amount
+
+        }
+
     )

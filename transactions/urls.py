@@ -64,4 +64,17 @@ urlpatterns = [
         views.cancel_transaction_view,
         name='cancel_transaction'
     ),
+
+    path(
+        "internship-transfer/",
+        views.internship_transfer_view,
+        name="internship_transfer"
+    ),
+
+    path(
+        "internship-confirm/",
+        views.internship_confirm_view,
+        name="internship_confirm"
+    ),
+
 ]
