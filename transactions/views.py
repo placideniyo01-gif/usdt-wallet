@@ -1085,37 +1085,61 @@ def internship_confirm_view(request):
                 "/internship-transfer/"
             )
 
-        # Deduct balance only after successful API response
-        user.balance -= amount_decimal
-        user.save()
+        import logging
 
-        Transaction.objects.create(
+        logger = logging.getLogger(__name__)
 
-            user=user,
+        try:
 
-            transaction_type="INTERNSHIP",
+            logger.error("STEP 1")
 
-            amount=amount_decimal,
+            user.balance -= amount_decimal
+            user.save()
 
-            status="APPROVED",
+            logger.error("STEP 2")
 
-            receiver_wallet=username,
+            Transaction.objects.create(
 
-            description=f"Sent to Internship Saving ({username})"
+                user=user,
 
-        )
+                transaction_type="INTERNSHIP",
 
-        InternshipTransfer.objects.create(
+                amount=amount_decimal,
 
-            user=user,
+                status="APPROVED",
 
-            receiver_username=username,
+                receiver_wallet=username,
 
-            amount=amount_decimal,
+                description=f"Sent to Internship Saving ({username})"
 
-            status="SUCCESS"
+            )
 
-        )
+            logger.error("STEP 3")
+
+            InternshipTransfer.objects.create(
+
+                user=user,
+
+                receiver_username=username,
+
+                amount=amount_decimal,
+
+                status="SUCCESS"
+
+            )
+
+            logger.error("STEP 4")
+
+        except Exception as e:
+
+            logger.exception("INTERNSHIP TRANSFER ERROR")
+
+            messages.error(
+                request,
+                str(e)
+            )
+
+            return redirect("/internship-transfer/")
 
         request.session.pop(
             "internship_username",
