@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
 import requests
 import json
+import logging
 
 INTERNSHIP_API = "https://internship-8lo5.onrender.com/api/receive-wallet-transfer/"
 
@@ -869,6 +870,10 @@ def internship_transfer_view(request):
 
         try:
 
+            logger = logging.getLogger(__name__)
+
+            logger.error(f"STATUS: {response.status_code}")
+            logger.error(f"BODY: {response.text}")
             data = response.json()
 
         except Exception:
