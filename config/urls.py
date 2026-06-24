@@ -52,8 +52,16 @@ if settings.DEBUG:
         document_root=settings.MEDIA_ROOT
     )
 
+# urls.py
+
 from django.views.generic import TemplateView
 
 urlpatterns += [
-
+    path(
+        "sw.js",
+        TemplateView.as_view(
+            template_name="sw.js",
+            content_type="application/javascript"
+        ),
+    ),
 ]
