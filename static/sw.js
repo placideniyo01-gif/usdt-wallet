@@ -1,8 +1,8 @@
-// static/sw.js
-
-const CACHE_NAME = "usdt-wallet-v1";
+const CACHE_NAME = "usdt-wallet-v2";
 
 self.addEventListener("install", event => {
+
+    self.skipWaiting();
 
     event.waitUntil(
 
@@ -10,12 +10,19 @@ self.addEventListener("install", event => {
         .then(cache => {
 
             return cache.addAll([
-                "/",
-                "/dashboard/"
+                "/"
             ]);
 
         })
 
+    );
+
+});
+
+self.addEventListener("activate", event => {
+
+    event.waitUntil(
+        self.clients.claim()
     );
 
 });
