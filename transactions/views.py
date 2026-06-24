@@ -1117,7 +1117,7 @@ def internship_confirm_view(request):
 
             logger.error("STEP 3")
 
-            InternshipTransfer.objects.create(
+            transfer = InternshipTransfer.objects.create(
 
                 user=user,
 
@@ -1128,6 +1128,8 @@ def internship_confirm_view(request):
                 status="SUCCESS"
 
             )
+
+            logger.error(f"TRANSFER SAVED ID: {transfer.id}")
 
             logger.error("STEP 4")
 
