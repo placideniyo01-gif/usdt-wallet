@@ -225,4 +225,17 @@ function showToast(message, type){
 
 </script>
 
+<script>
+
+document
+.getElementById("amountInput")
+.addEventListener("input", function(){
+
+    document.getElementById("amountPreview").textContent =
+    this.value || "0";
+
+});
+
+</script>
+
 {% endblock %}
